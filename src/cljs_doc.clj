@@ -6,19 +6,16 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns cljs-info.doc
+(ns cljs-doc
   "Namespace dedicated to the generation of text-formatted documentation for
   vars, namespaces and types in ClojureScript."
   (:require [clj-info.doc2txt] ;;clj-info.doc2txt/doc2txt
-            [cljs-info.ns]
             [clojure.set]
             [clojure.string]
+            [cljs-ns]
             [cljs.analyzer]))
 
-
 ;;;;
-
-(defn namespaces [] @cljs.analyzer/namespaces)
 
 (defn cljs-ns [] cljs.analyzer/*cljs-ns*)
 
@@ -31,9 +28,6 @@
   "Some cljs-specific forms are no real vars and have no online-docs.
    This map substitutes for those."
   {
-  'cljs-doc {:name 'cljs-doc :arglists '(quote ([n])) :doc 
-  "Prints documentation for a var, namespace, or special form.
-  Name n is string, symbol, or quoted symbol." :special-form true}
   'load-namespace {:name 'load-namespace :arglists '(quote ([n])) :doc "Load a namespace and all of its dependencies into the evaluation environment.
   The environment is responsible for ensuring that each namespace is loaded once and
   only once." :special-form true}
@@ -93,50 +87,49 @@
       {:title title :message message})))
 
 
-(declare cljs-ns-resolve)
 
 (defn cljs-doc*
   "Function prints documentation for a var, namespace, or special form.
   Name n is string or quoted symbol."
   ([] (cljs-doc* 'cljs-doc*))
-  ([n] (cljs-doc* (cljs-empty-env) n))
-  ([env n]
-    (let [n (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))
-;;     (let [n (symbol n)
-          n-maybe-cljs-core (if (namespace n) n (symbol (str "cljs.core/" n)))
-;;           m (doc2txt env n)]
-          m (if (or (cljs-ns-resolve (cljs-ns) n) (cljs-special-forms-doc n))
-              (doc2txt env n)
-              (clj-info.doc2txt/doc2txt n-maybe-cljs-core))]
+  ([n]
+    (let [env (cljs-empty-env)
+          s (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))
+          n-maybe-cljs-core (if (namespace s) s (symbol (str "cljs.core/" s)))
+          m (if (or (cljs-ns/cljs-ns-resolve (cljs-ns) s) 
+                    (cljs-special-forms-doc s))
+              (doc2txt env s)
+              (if (ns-resolve *ns* s)
+                (clj-info.doc2txt/doc2txt s)
+                (if (ns-resolve *ns* n-maybe-cljs-core)
+                  (clj-info.doc2txt/doc2txt n-maybe-cljs-core)
+                  {:title (str "Sorry, no doc-info for \"" s "\"")})))]
       (println "----------------------------------------------------------------------")
       (println (:title m) (:message m)))
-    (symbol "")))
-;;      )))
+    (symbol "")) ;; suppresses the eval-print of nil - purely esthetics
+  ([n & m-n]
+    ;; allows for (apply cljs-doc* (apropos "replace"))
+    (doall (map cljs-doc* (cons n m-n))) (symbol "")))
 
 
 (defmacro cljs-doc
   "Macro prints documentation for a var, namespace, or special form.
   Name n is string, symbol, or quoted symbol."
-  ([] (cljs-doc* "cljs-doc"))
+  ([] `(cljs-doc* "cljs-doc"))
+;;   ([] `(~cljs-doc* "cljs-doc"))
   ([n] 
-    (cond (string? n) `(cljs-doc* ~(cljs-empty-env) ~n)
-      (symbol? n) `(cljs-doc* ~(cljs-empty-env) ~(str n))
-      (= (type n) clojure.lang.Cons) `(cljs-doc* ~(cljs-empty-env) ~(str (second n)))))
-  ([env n]
-    (cond (string? n) `(cljs-doc* ~env ~n)
-          (symbol? n) `(cljs-doc* ~env ~(str n))
-          (= (type n) clojure.lang.Cons) `(cljs-doc* ~env ~(str (second n))))))
+    (cond (string? n) `(cljs-doc* ~n)
+      (symbol? n) `(cljs-doc* ~(str n))
+      (= (type n) clojure.lang.Cons) `(cljs-doc* ~(str (second n))))))
         
 
-(defn cljs-doc-special-fn
-  [repl-env & quoted-var] 
-  (if (seq quoted-var)
-    (if (> (count quoted-var) 1)
-      (doseq [v quoted-var] (cljs-doc* (cljs-empty-env) v))
-      (cljs-doc* (cljs-empty-env) (first quoted-var)))
-    (cljs-doc*))
-    (symbol ""))
+;;;;
+(def cljs-doc-special-fns
+  "Function mapping table for use with run-repl-listen."
+  {
+    ;;'doc (fn [& p] (print (apply cljs-doc/cljs-doc* (cljs-ns/symbify p))))
+    'cljs-doc (fn [& p] (print (apply cljs-doc/cljs-doc* (cljs-ns/symbify p))))
+  })
 
-
-
+;;;;
 
