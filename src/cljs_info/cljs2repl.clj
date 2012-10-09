@@ -7,12 +7,23 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns cljs-info.cljs2repl
+  
   (:use [cljs-info.ns]
         [cljs-info.doc]
         [cljs-info.repl-util])
   (:require [cljs.analyzer]
             [cljs.repl]
-            [cljs.repl.browser]))
+            [cljs.repl.browser]
+;;             [cljs-info.patch-cljs-repl-browser]
+            ))
+
+
+(defn patch-cljs-repl-browser-print
+  "!!!WARNING!!!
+  This function will monkey-patch the cljs-repl-browser code to redirect the stdout 
+  such that cljs->repl will print on its own terminal.
+  Maybe one day clojurescript will adopt a solution for this..."
+  [] (require 'cljs-info.patch-cljs-repl-browser))
 
 
 (def the-env 
@@ -25,7 +36,7 @@
   Any printing to *out* from within the cljs-form is send to the stdout connected to the calling context."
   ([] (cljs->repl* '(js/alert "Yes Way!")))
   ([form]
-     (reset! cljs.repl.browser/context-out *out*)
+     (when (ns-resolve *ns* 'cljs.repl.browser/context-out) (eval '(reset! cljs.repl.browser/context-out *out*)))
      (let [r (cljs.repl/evaluate-form 
                 cljs-info.repl-util/*the-repl-env* 
                 (assoc the-env 
@@ -33,7 +44,7 @@
                 "<cljs repl>"
                 form
                 (#'cljs.repl/wrap-fn form))]
-       (reset! cljs.repl.browser/context-out nil)
+       (when (ns-resolve *ns* 'cljs.repl.browser/context-out) (eval '(reset! cljs.repl.browser/context-out nil)))
        r)))
 
 
@@ -54,8 +65,8 @@
   Any printing to *out* from within the js-code is send to the stdout connected to the calling context."
   ([] (js->repl "alert('No Way!')"))
   ([code] 
-    (reset! cljs.repl.browser/context-out *out*)
+     (when (ns-resolve *ns* 'cljs.repl.browser/context-out) (eval '(reset! cljs.repl.browser/context-out *out*)))
     (let [r (cljs.repl.browser/browser-eval code)]
-      (reset! cljs.repl.browser/context-out nil)
+       (when (ns-resolve *ns* 'cljs.repl.browser/context-out) (eval '(reset! cljs.repl.browser/context-out nil)))
       r)))
 
