@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns cljs-ns
+(ns cljs-info.ns
   "Clojure-library for the ClojureScript resolution environment that gives 
   the equivalent functionality of some of the namespace specific resolution 
   and info functions, like all-ns, ns-map, ns-resolve, apropos, etc.
@@ -15,21 +15,18 @@
   Note that this is not a clojurescript-library, but its functions can be called 
   from the cljs-repl with some limitations."
   (:require [clojure.set]
-            [cljs.analyzer :as ana])
+            [cljs.analyzer])
   (:import (java.io LineNumberReader InputStreamReader PushbackReader)
            (clojure.lang RT Reflector)))
 
 
+(defn ^:private cljs-ns [] cljs.analyzer/*cljs-ns*)
 
 ;;;;
 ;; keep cljs.analyzer dependencies separate
 ;; may make it easier to port to cljs in future
 
 (defn ^:private namespaces [] @cljs.analyzer/namespaces)
-
-(defn ^:private cljs-ns [] cljs.analyzer/*cljs-ns*)
-
-(defn ^:private cljs-empty-env [] (cljs.analyzer/empty-env))
 
 ;;;;
 
@@ -319,32 +316,3 @@ str-or-pattern."
   `(println (or (cljs-source-fn '~n) (str "Source not found"))))
 
 
-;;;;
-
-(defn symbify
-  "Hack to provide some robustness on the repl-input
-  (the repl crashes too easily when unexpected characters or var-types are entered)"
-  [p] 
-  (map 
-    (fn [n] (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))) 
-    (rest p)))
-
-(def cljs-ns-special-fns
-  "Function mapping table for use with run-repl-listen."
-  {
-  'cljs-source (fn [& p] (print (cljs-ns/cljs-source-fn (second p))))
-  'cljs-apropos (fn [& p] (print (cljs-ns/cljs-apropos (second p))))
-  'cljs-apropos-doc (fn [& p] (print (cljs-ns/cljs-apropos-doc (second p))))
-  '*cljs-ns* (fn [& p] (print cljs.analyzer/*cljs-ns*))
-  'cljs-all-ns (fn [& p] (print (cljs-ns/cljs-all-ns)))
-  'cljs-ns-resolve (fn [& p] (print (apply cljs-ns/cljs-ns-resolve (symbify p))))
-  'cljs-ns-map (fn [& p] (print (apply cljs-ns/cljs-ns-map (symbify p))))
-  'cljs-ns-publics (fn [& p] (print (apply cljs-ns/cljs-ns-publics (symbify p))))
-  'cljs-ns-aliases (fn [& p] (print (apply cljs-ns/cljs-ns-aliases (symbify p))))
-  'cljs-ns-requires (fn [& p] (print (apply cljs-ns/cljs-ns-requires (symbify p))))
-  'cljs-ns-privates (fn [& p] (print (apply cljs-ns/cljs-ns-privates (symbify p))))
-  'cljs-ns-refers (fn [& p] (print (apply cljs-ns/cljs-ns-refers (symbify p))))
-  'cljs-ns-refers-wo-core 
-    (fn [& p] (print (apply cljs-ns/cljs-ns-refers-wo-core (symbify p))))
-  'cljs-find-ns (fn [& p] (print (apply cljs-ns/cljs-find-ns (symbify p))))
-  })

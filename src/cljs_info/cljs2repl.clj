@@ -6,37 +6,28 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns cljs2repl
-  (:use ;;[clj-ns-browser.sdoc]
-        [cljs-ns]
-        [cljs-doc]
-        [clj-info])
-  (:require [cljsbuild.repl.listen]
-            [cljs.analyzer]
+(ns cljs-info.cljs2repl
+  (:use [cljs-info.ns]
+        [cljs-info.doc]
+        [cljs-info.repl-util])
+  (:require [cljs.analyzer]
             [cljs.repl]
-            [cljs.repl.browser])
-  (:import [clojure.lang LineNumberingPushbackReader]
-           [java.io BufferedReader File StringReader]
-           [java.lang StringBuilder]))
+            [cljs.repl.browser]))
 
-    
-(def ^:dynamic *the-repl-env*)
-;;   {:port 9000, :optimizations :simple, :working-dir ".lein-cljsbuild-repl", 
-;;    :serve-static true, :static-dir ["." "out/"], :preloaded-libs []})
 
 (def the-env 
   {:context :statement :locals {}})
-  
 
-(defn cljs*->repl
+
+(defn cljs->repl*
   "Functions compiles the clojurescript form, sends the resulting javascript to the browser,
   evaluates the js, sends the result back to the clj-side, and returns that result.
   Any printing to *out* from within the cljs-form is send to the stdout connected to the calling context."
-  ([] (cljs*->repl '(js/alert "Yes Way!")))
+  ([] (cljs->repl* '(js/alert "Yes Way!")))
   ([form]
      (reset! cljs.repl.browser/context-out *out*)
      (let [r (cljs.repl/evaluate-form 
-                *the-repl-env* 
+                cljs-info.repl-util/*the-repl-env* 
                 (assoc the-env 
                   :ns (cljs.analyzer/get-namespace cljs.analyzer/*cljs-ns*)) 
                 "<cljs repl>"
@@ -44,18 +35,19 @@
                 (#'cljs.repl/wrap-fn form))]
        (reset! cljs.repl.browser/context-out nil)
        r)))
-    
-    
+
+
 (defmacro cljs->repl 
   "Macro compiles the clojurescript form(s), 
   sends the resulting javascript to the browser,
   evaluates the js, sends the result back to the clj-side, and returns that result.
   Any printing to *out* from within the cljs-form is send to the stdout connected to the calling context."
-  ([] (cljs*->repl '(js/alert "Yes Way!")))
-  ([form] (cljs*->repl form))
-  ([form & forms] (doseq [f (cons form forms)] (cljs*->repl f)))
+  ([] (cljs->repl* '(js/alert "Yes Way!")))
+  ([form] (cljs->repl* form))
+  ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f)))
   )
-    
+
+
 (defn js->repl
   "Function sends the javascript code (string) to the browser,
   evaluates the js, sends the result back to the clj-side, and returns that result.
