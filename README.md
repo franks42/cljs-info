@@ -21,13 +21,13 @@ One mode of operation is to have two repls running on the same jvm: one cljs-rep
 
 The two repls are a bit inconvenient, and we can hide the fact that we have to retrieve the cljs-meta data from the clj-side by transparently communicating between the cljs-js side and the clj-jvm. In other words, we would have a cljs doc-function that is a proxy which will make an rpc-like call to the clj-jvm to evaluate the before-mentioned cljs-doc function and download the result. The advantage of this approach is that you would only have a single repl to work with, and that you can use the results of the help and reflection functions directly in your cljs-code.
 
-Unfortunately, the reflection facilities are a work in progress and those rpc-like proxies are being worked on... Currently there is a cljs-function "cljs.reflect/doc" in the clojurescript repo that works a little bit in certain setups - hopefully its improved version will show us the way how to communicate properly between the cljs-js and the clj-jvm.  
+Unfortunately, the reflection facilities are a work in progress and those rpc-like proxies are being worked on... Currently there is a cljs-function "cljs.reflect/doc" in the clojurescript repo that works a little bit in certain setups - hopefully its improved version will soon show us the proper way to communicate  between the cljs-js and the clj-jvm.  
 
 ### One and a half REPL operation.
 
-If you really want to work in a single cljs-repl "now", then there is a backdoor facility available that allows you to execute clj-functions on the jvm from the cljs-repl. One could argue that this facility is an ugly, nasty hack... as it kind of makes you believe those functions are executing in the cljs-context, but they are not because those are not real cljs-functions, do not return anything and can only communicate back by printing to the jvm's stdout. 
+If you really want to work in a single cljs-repl "now", then there is a backdoor facility available that allows you to execute clj-functions on the jvm from the cljs-repl. One could argue that this facility is an ugly, nasty hack... as it kind of makes you believe those functions are executing in the cljs-context, but they are not because those are not real cljs-functions, do not return anything and can only communicate back by printing to the jvm's stdout. Note that currently, the load-namespace, load-file and in-ns commands are implemented that way in the clojurescript distro.
 
-Even though the cljs-info module makes some of the help and ns-info functions available thru this hack, it should be seen as a temporary solution that should be burnt and destroyed as soon as a solid rpc-like solution is available.
+Even though the cljs-info module makes some of the help and ns-info functions available thru this hack, it should be seen as a temporary solution that should be burnt, destroyed and forgotten as soon as a solid rpc-like solution is available.
 
 
 # cljs-info.doc
@@ -47,6 +47,8 @@ The cljs-info.repl namespace provides a number of functions to start and to inte
 ### run-repl-listen
 
 None of the cljs-info.repl functions are essential for the cljs-info.doc and cljs-info.ns related functions, but if you want to work in the "one and a half repl" mode, you will have to start the cljs-repl with certain configuration parameters. The "run-repl-listen" function is a plug-in replacement for the equivalent lein-cljsbuild one. The difference is that it configures a number of the cljs-doc and cljs-ns-* functions such that they can be called from the cljs-repl. Again... please reread the "one and a half repl" section to understand the caveats.
+
+Note that cljs->repl and cljs->repl* also rely on the special configuration setting and therefor also require the cljs-repl to be started with cljs-info.repl/run-repl-listen.
 
 ### cljs->repl, cljs->repl* and js->repl
 
