@@ -10,23 +10,21 @@
   "Namespace dedicated to the generation of text-formatted documentation for
   vars, namespaces and types in ClojureScript."
   (:require [cljs-info.doc2txt]
+            [clj-info]
             [clj-info.doc2txt]
-            [clojure.set]
-            [clojure.string]
             [cljs-info.ns]
             [cljs.analyzer]))
 
 
-
 (defn cljs-doc*
-  "Function prints documentation for a var, namespace, or special form.
-  Name n is string or quoted symbol."
-  ([] (cljs-doc* 'cljs-doc*))
+  "Function prints documentation for a ClojureScript variable, namespace,
+  or special form.  Name n is string or quoted symbol."
+  ([] (tdoc* 'cljs-info.doc/cljs-doc*))
   ([n]
     (let [env (cljs.analyzer/empty-env)
           s (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))
           n-maybe-cljs-core (if (namespace s) s (symbol (str "cljs.core/" s)))
-          m (if (or (cljs-info.ns/cljs-ns-resolve cljs.analyzer/*cljs-ns* s) 
+          m (if (or (cljs-info.ns/cljs-ns-resolve cljs.analyzer/*cljs-ns* s)
                     (cljs-info.doc2txt/cljs-special-forms-doc s))
               (cljs-info.doc2txt/doc2txt env s)
               (if (ns-resolve *ns* s)
@@ -43,14 +41,13 @@
 
 
 (defmacro cljs-doc
-  "Macro prints documentation for a var, namespace, or special form.
-  Name n is string, symbol, or quoted symbol."
+  "Macro prints documentation for a ClojureScript variable, namespace,
+  or special form. Name n is string, symbol, or quoted symbol."
   ([] `(cljs-doc* "cljs-doc"))
-;;   ([] `(~cljs-doc* "cljs-doc"))
-  ([n] 
+  ([n]
     (cond (string? n) `(cljs-doc* ~n)
       (symbol? n) `(cljs-doc* ~(str n))
       (= (type n) clojure.lang.Cons) `(cljs-doc* ~(str (second n))))))
-        
+
 
 
