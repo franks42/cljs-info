@@ -25,12 +25,15 @@ While in the second session on the same repl-jvm you would run a clj-repl, where
     nil 
     user=> (use 'cljs-info.ns) 
     nil 
-    user=> (cljs-doc cljs-doc) 
-    ---------------------------------------------------------------------- 
-    cljs-info.doc/cljs-doc   -   Macro  
-    [][n] 
-      Macro prints documentation for a ClojureScript variable, namespace, 
-      or special form. Name n is string, symbol, or quoted symbol. 
+    user=> (doc jayq.util/clj->js)
+    nil
+    user=> (cljs-doc jayq.util/clj->js)
+    ----------------------------------------------------------------------
+    jayq.util/clj->js   -   Function 
+    ([x])
+      Recursively transforms ClojureScript maps into Javascript objects,
+       other ClojureScript colls into JavaScript arrays, and ClojureScript
+       keywords into JavaScript strings.
     
     user=> (cljs-all-ns) 
     #{cljs.core cljs.user clojure.browser.event clojure.browser.net clojure.browser.repl 
@@ -49,6 +52,15 @@ We first start a clj-repl session and start the cljs-repl with the customized "c
     nil 
     user=> (cljs-info.repl/run-repl-listen) 
     "Type: " :cljs/quit " to quit" 
+    ClojureScript:cljs.user> (cljs-doc js->clj)
+    ----------------------------------------------------------------------
+    cljs.core/js->clj   -   Function 
+    ([x & options])
+      Recursively transforms JavaScript arrays into ClojureScript
+      vectors, and JavaScript objects into ClojureScript maps.  With
+      option ':keywordize-keys true' will convert object fields from
+      strings to keywords.
+    
     ClojureScript:cljs.user> (cljs-ns-resolve replace) 
     cljs.core/replace 
     ClojureScript:cljs.user> 
