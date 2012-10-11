@@ -15,7 +15,9 @@
   Note that this is not a clojurescript-library, but its functions can be called
   from the cljs-repl with some limitations."
   (:require [clojure.set]
-            [cljs.analyzer :as ana]))
+            [cljs.analyzer :as ana])
+  (:import (java.io LineNumberReader InputStreamReader PushbackReader)
+           (clojure.lang RT Reflector)))
 
 ;;;;
 

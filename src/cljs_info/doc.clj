@@ -19,7 +19,7 @@
 (defn cljs-doc*
   "Function prints documentation for a ClojureScript variable, namespace,
   or special form.  Name n is string or quoted symbol."
-  ([] (tdoc* 'cljs-info.doc/cljs-doc*))
+  ([] (clj-info/tdoc* 'cljs-info.doc/cljs-doc*))
   ([n]
     (let [env (cljs.analyzer/empty-env)
           s (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))
@@ -43,7 +43,7 @@
 (defmacro cljs-doc
   "Macro prints documentation for a ClojureScript variable, namespace,
   or special form. Name n is string, symbol, or quoted symbol."
-  ([] `(cljs-doc* "cljs-doc"))
+  ([] `(clj-info/tdoc* "cljs-doc"))
   ([n]
     (cond (string? n) `(cljs-doc* ~n)
       (symbol? n) `(cljs-doc* ~(str n))

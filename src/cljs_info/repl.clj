@@ -109,8 +109,8 @@
       (when-not (false? @cljs-info.repl/context-out)
         (reset! cljs-info.repl/context-out nil))
       eval-result))
-;;   ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f))))
-  ([form & forms] (cljs->repl* (into [] (cons form forms)))))
+  ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f))))
+;;   ([form & forms] (cljs->repl* (into [] (cons form forms)))))
 
 (defmacro cljs->repl
   "Macro compiles the clojurescript form(s),
@@ -119,8 +119,8 @@
   Any printing to *out* from within the cljs-form is send to the stdout connected to the calling context."
   ([] (cljs->repl* '(js/alert "Yes Way!")))
   ([form] (cljs->repl* form))
-;;   ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f))))
-  ([form & forms] (cljs->repl* (into [] (cons form forms)))))
+  ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f))))
+;;   ([form & forms] (cljs->repl* (into [] (cons form forms)))))
 
 
 (defn js->repl
