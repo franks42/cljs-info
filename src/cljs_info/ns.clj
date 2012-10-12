@@ -21,6 +21,11 @@
 
 ;;;;
 
+(defn cljs-ns 
+  "Function to programmatically communicate the current default 
+  namespace (the *ns* equivalent) to the cljs-context."
+  [] ana/*cljs-ns*)
+
 (defn cljs-all-ns
   "Returns a sequence of all cljs-namespaces as symbols."
   [] (apply sorted-set (keys @ana/namespaces)))

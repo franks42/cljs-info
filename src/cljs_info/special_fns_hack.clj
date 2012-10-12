@@ -28,6 +28,7 @@
 (def cljs-ns-special-fns
   "Function mapping table for use with run-repl-listen."
   {
+  'cljs-ns (fn [& p] (print (cljs-info.ns/cljs-ns)))
   'cljs-source (fn [& p] (print (cljs-info.ns/cljs-source-fn (second p))))
   'cljs-apropos (fn [& p] (print (cljs-info.ns/cljs-apropos (second p))))
   'cljs-apropos-doc (fn [& p] (print (cljs-info.ns/cljs-apropos-doc (second p))))

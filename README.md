@@ -7,7 +7,9 @@ cljs-info
 
 You should really read the "What, Why, How..." section first, but most of you will skip to the install section anyway so I moved it upfront.
 
-You need a single dependency-entry in your Leiningen's project.clj:
+Throughout, it's assumed that you're developing ClojureScript projects with lein-cljsbuild, and that you managed to get the cljs-repl working that is connected your browser's js-vm, which is loaded with the javascript obtained from your webserver.
+
+On a (working) lein-cljsbuild project, need a single dependency-entry in your Leiningen's project.clj:
 
     :dependencies [... 
                     [cljs-info "1.0.0"] 
@@ -41,6 +43,8 @@ While in the second session on the same repl-jvm you would run a clj-repl, where
     example.hello example.repl jayq.core jayq.util jquery-test myreflect} 
     user=>  
     
+
+The only caveat of this mode of operation is the fact that the default namespace is maintained on a per-thread basis in the var "cljs.analyzer/*cljs-ns*", which means that you'll easily get out of sync if you change the default namespace in the cljs-repl with "in-ns". Just something to be aware off...
 
 ### ONE-AND-A-HALF-REPL SETUP
 
