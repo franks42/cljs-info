@@ -122,6 +122,8 @@ Even though the cljs-info module makes some of the help and ns-info functions av
 
 The cljs-info.doc namespace provides the "cljs-doc macro" and "cljs-doc*" function, which are equivalent to   clj's venerable "doc" macro, except that cljs-doc knows how to find the docstrings for cljs' namespaces, functions, macros and variables. (it's functionality is similar to cljs.reflect/doc except that it works in all setups and it arguably provides more info...) 
 
+Some info for cljs-doc is still missing, because in the current r1503 release, no doc-strings are picked-up from the def's and ns' definitions. CLJS-387 is supposed to remedy that "oversight" hopefully soon.
+
 # cljs-info.ns
 
 The cljs-info.ns namespace provides equivalent implementations for cljs of clj's all-ns, ns-resolve, find-ns, apropos, source, ns-map, ns-publics, etc. Note that the cljs-equivalent functions have the same names prepended by "cljs-".

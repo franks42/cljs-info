@@ -65,7 +65,7 @@
 (defn ^:private all-ns-var-names-docs [] (map (fn [e] [(:name e) (:doc e)]) (all-ns-defs-vals)))
 
 (defn ^:private all-ns-clj-cljs-core-publics [] 
-  (map (fn [e] (symbol (clojure.string/replace-first (str e) "#'" "")))
+  (map (fn [e] (symbol (subs (str e) 2)))
        (vals (ns-publics (the-ns 'cljs.core)))))
 ;;
 
@@ -246,6 +246,15 @@ str-or-pattern in either the fqname or the associated doc-string."
       (when (= (:name m) (get-in @ana/namespaces
                            [(:ns m) :defs (symbol (name (:name m))) :name]))
         (:name m)))))
+
+(defn cljs-resolve-name 
+  "Combination of cljs-ns-resolve and cljs-find-ns as it tries to 
+  resolve s to either a namespace, var or class."
+  ([s] (cljs-resolve-name ana/*cljs-ns* s))
+  ([n s]
+    (if-let [a-ns (cljs-find-ns s)]
+      a-ns
+      (cljs-ns-resolve n s))))
 
 ;;;;
 

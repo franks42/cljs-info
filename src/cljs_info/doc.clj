@@ -24,7 +24,8 @@
     (let [env (cljs.analyzer/empty-env)
           s (symbol (str (if (= (type n) clojure.lang.Cons) (second n) n)))
           n-maybe-cljs-core (if (namespace s) s (symbol (str "cljs.core/" s)))
-          m (if (or (cljs-info.ns/cljs-ns-resolve cljs.analyzer/*cljs-ns* s)
+          m (if (or (cljs-info.ns/cljs-find-ns s)
+                    (cljs-info.ns/cljs-ns-resolve cljs.analyzer/*cljs-ns* s)
                     (cljs-info.doc2txt/cljs-special-forms-doc s))
               (cljs-info.doc2txt/doc2txt env s)
               (if (ns-resolve *ns* s)
@@ -50,4 +51,11 @@
       (= (type n) clojure.lang.Cons) `(cljs-doc* ~(str (second n))))))
 
 
+(defn cljs-find-doc
+  "Prints documentation for any cljs-variable/fn/ns whose documentation or name
+ contains a match for re-string-or-pattern"
+  [str-or-pattern]
+  (doseq [fqn (cljs-info.ns/cljs-apropos-doc str-or-pattern)] 
+    (println (cljs-doc* fqn)))
+  (symbol ""))
 
