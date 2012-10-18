@@ -62,20 +62,21 @@
   the local *out* of the calling context (true), or send to the
   repl-terminal's stdout (false)."
   [true-false]
-  (reset! cljs-info.repl/context-out true-false))
+  (reset! context-out true-false))
 
 ;; monkey patching the "cljs.repl.browser/handle-post :print" code
 ;; no elegant solution until clojurescript provides the knob...
 (defmethod cljs.repl.browser/handle-post :print [{:keys [content order]} conn _ ]
-  (if @cljs-info.repl/context-out
+  (if @context-out
     (do (cljs.repl.browser/constrain-order
-          order (fn [] (binding [*out* @cljs-info.repl/context-out]
-                                        (do (print (read-string content))
-                                            (.flush *out*)))))
+          order (fn [] (binding [*out* @context-out]
+                         (do (print (read-string content))
+                             (.flush *out*)))))
         (cljs.repl.server/send-and-close conn 200 "ignore__"))
 
     (do (cljs.repl.browser/constrain-order
-          order (fn [] (do (print (read-string content)) (.flush *out*))))
+          order (fn [] (do (print (read-string content)) 
+                           (.flush *out*))))
         (cljs.repl.server/send-and-close conn 200 "ignore__"))))
 
 ;;;;;;;;
@@ -95,8 +96,7 @@
   ([] (cljs->repl* '(js/alert "Yes Way!")))
   ([form]
     ;; see if we have to redirect stdout to our local *out*
-    (when-not (false? @cljs-info.repl/context-out)
-      (reset! cljs-info.repl/context-out *out*))
+    (when-not (false? @context-out) (reset! context-out *out*))
     ;; send the form for eval
     (let [eval-result (cljs.repl/evaluate-form
               *the-repl-env*
@@ -106,8 +106,7 @@
               form
               (#'cljs.repl/wrap-fn form))]
       ;; reset stdout if needed
-      (when-not (false? @cljs-info.repl/context-out)
-        (reset! cljs-info.repl/context-out nil))
+      (when-not (false? @context-out) (reset! context-out nil))
       eval-result))
   ([form & forms] (doseq [f (cons form forms)] (cljs->repl* f))))
 ;;   ([form & forms] (cljs->repl* (into [] (cons form forms)))))
@@ -129,10 +128,10 @@
   Any printing to *out* from within the js-code is send to the stdout connected to the calling context."
   ([] (js->repl "alert('No Way!')"))
   ([code]
-    (when-not (false? @cljs-info.repl/context-out)
-      (reset! cljs-info.repl/context-out *out*))
-    (let [r (cljs.repl.browser/browser-eval code)]
-      (when-not (false? cljs-info.repl/context-out)
-        (reset! @cljs-info.repl/context-out nil))
-      r)))
+    (when-not (false? @context-out) (reset! context-out *out*))
+    (let [eval-result (cljs.repl.browser/browser-eval code)]
+      (when-not (false? context-out) (reset! context-out nil))
+      (if (= (:status eval-result) :success)
+        (:value eval-result)
+        eval-result))))
 

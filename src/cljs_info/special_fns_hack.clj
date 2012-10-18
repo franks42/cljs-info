@@ -1,7 +1,10 @@
 (ns cljs-info.special-fns-hack
   "TEMPORARY HACK - Module to generate the special-fns maps for use with repl/repl."
   (:require [cljs-info.ns]
+            [clojure.pprint]
             [cljs-info.doc]))
+
+(declare cljs-info-special-fns)
 
 (defn symbify
   "Hack to provide some robustness on the repl-input
@@ -22,12 +25,16 @@
 
 (def cljs-doc-special-fns
   "Function mapping table for use with run-repl-listen."
-  {'cljs-doc (fn [& p] (print (apply cljs-info.doc/cljs-doc* (symbify p))))})
+  {'cljs-doc (fn [& p] (print (apply cljs-info.doc/cljs-doc* (symbify p))))
+   'cljs-find-doc (fn [& p] (print (apply cljs-info.doc/cljs-find-doc (symbify p))))
+   })
 
 
 (def cljs-ns-special-fns
   "Function mapping table for use with run-repl-listen."
   {
+  'cljs-info (fn [& p] (println "Available \"special\" functions:")
+                       (clojure.pprint/pprint (sort (keys cljs-info-special-fns))))
   'cljs-ns (fn [& p] (print (cljs-info.ns/cljs-ns)))
   'cljs-source (fn [& p] (print (cljs-info.ns/cljs-source-fn (second p))))
   'cljs-apropos (fn [& p] (print (cljs-info.ns/cljs-apropos (second p))))

@@ -67,6 +67,23 @@
 (defn ^:private all-ns-clj-cljs-core-publics [] 
   (map (fn [e] (symbol (subs (str e) 2)))
        (vals (ns-publics (the-ns 'cljs.core)))))
+
+(defn  cljs-all-ns-metadata-keys
+  "Return in a sorted-set all the meta-data keys used for the ns in @namespaces."
+  [] 
+  (into (sorted-set) (flatten (for [v (vals @ana/namespaces)] (keys v)))))
+
+
+(defn  cljs-all-var-metadata-keys
+  "Return in a sorted-set all the meta-data keys used for the vars in @namespaces."
+  [] 
+  (into (sorted-set) 
+    (flatten 
+      (for [ns-meta (vals @ana/namespaces)]
+        (for [var-meta (vals (:defs ns-meta))]
+            (keys var-meta))))))
+
+
 ;;
 
 (defn cljs-apropos
