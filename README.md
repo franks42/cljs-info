@@ -1,15 +1,15 @@
 cljs-info
 =========
 
-"cljs-info" is collection of Clojure-functions to provide basic help and reflection facilities for ClojureScript, like doc, apropos, source, ns-map & friends.
+"cljs-info" is a collection of Clojure-functions to provide basic help and reflection facilities for ClojureScript, like doc, apropos, source, ns-map & friends.
 
 ## Installation & Basic Usage
 
 You should really read the "What, Why, How..." section first, but most of you will skip to the install section anyway so I moved it upfront.
 
-Throughout, it's assumed that you're developing ClojureScript projects with lein-cljsbuild, and that you already managed to get the cljs-repl working that is connected to your browser's js-vm, which is loaded with the javascript obtained from your webserver. Make sure you have the latest and greatest versions of lein-cljsbuild (0.2.8) and clojurescript (r1503). It may also work with node.js, but so far I've only tested it with the webbrowser on MacOSX.
+Throughout, it's assumed that you're developing ClojureScript projects with lein-cljsbuild, and that you already managed to get the cljs-repl working that is connected to your browser's js-vm, which is loaded with the javascript obtained from your webserver. Make sure you have the latest and greatest versions of lein-cljsbuild (0.2.8) and clojurescript (r1503). It may also work with node.js, but so far I've only tested it with webbrowsers on MacOSX.
 
-On a (working) lein-cljsbuild project, you need to add a single dependency-entry in your Leiningen's project.clj:
+On a (working) lein-cljsbuild project, you need to add a single dependency-entry to your Leiningen's project.clj:
 
     :dependencies [... 
                     [cljs-info "1.0.0"] 
