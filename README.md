@@ -1,13 +1,13 @@
 cljs-info
 =========
 
-"cljs-info" is collection of Clojure-functions to provide basic help and reflection facilities for ClojureScript, like doc, apropos, source, ns-map &amp friends.
+"cljs-info" is collection of Clojure-functions to provide basic help and reflection facilities for ClojureScript, like doc, apropos, source, ns-map & friends.
 
 ## Installation & Basic Usage
 
 You should really read the "What, Why, How..." section first, but most of you will skip to the install section anyway so I moved it upfront.
 
-Throughout, it's assumed that you're developing ClojureScript projects with lein-cljsbuild, and that you managed to get the cljs-repl working that is connected your browser's js-vm, which is loaded with the javascript obtained from your webserver. Make sure you have the latest and greatest versions of lein-cljsbuild (0.2.8) and clojurescript (r1503). It may also work with node.js, but so far I've only tested it with the Firefox browser on MacOSX.
+Throughout, it's assumed that you're developing ClojureScript projects with lein-cljsbuild, and that you already managed to get the cljs-repl working that is connected to your browser's js-vm, which is loaded with the javascript obtained from your webserver. Make sure you have the latest and greatest versions of lein-cljsbuild (0.2.8) and clojurescript (r1503). It may also work with node.js, but so far I've only tested it with the webbrowser on MacOSX.
 
 On a (working) lein-cljsbuild project, you need to add a single dependency-entry in your Leiningen's project.clj:
 
@@ -21,7 +21,7 @@ After which you can choose between a 2-repl or one-and-a-half-repl setup (read t
 
 In one terminal session, you run the cljs-repl as you normally would.
 
-In a second terminal session connected to the same repl-jvm you run a clj-repl, where you can concurrently query the live ClojureScript world about its innards:
+In a second terminal session connected to the same repl-jvm, you run a clj-repl where you can concurrently query the live ClojureScript world about its meta-innards:
 
     user=> (use 'cljs-info.doc) 
     nil 
@@ -42,7 +42,7 @@ In a second terminal session connected to the same repl-jvm you run a clj-repl, 
     user=>  
     
 
-The only caveat of this mode of operation is the fact that the default namespace is maintained on a per-thread basis in the var "cljs.analyzer/*cljs-ns*", which means that you'll get out of sync if you change the default namespace in the cljs-repl with "in-ns". Just something to be aware off...
+The only caveat of this mode of operation is the fact that the default namespace is maintained on a per-thread basis in the var "cljs.analyzer/*cljs-ns*", which means that you'll get out of sync if you change the default namespace in the cljs-repl with "in-ns". In that case you should also change the "cljs.analyzer/*cljs-ns*" value in your clj-repl to work in the same context as the cljs-repl. Just something to be aware off...
 
 ### ONE-AND-A-HALF-REPL SETUP
 
