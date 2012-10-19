@@ -3,6 +3,8 @@ cljs-info
 
 "cljs-info" is a collection of Clojure-functions to provide basic help and reflection facilities for ClojureScript, like doc, apropos, source, ns-map & friends.
 
+[cljs-info codox-doc](http://htmlpreview.github.com/?https://raw.github.com/franks42/cljs-info/master/doc/index.html "cljs-info codox-doc")
+
 ## Installation & Basic Usage
 
 You should really read the "What, Why, How..." section first, but most of you will skip to the install section anyway so I moved it upfront.
