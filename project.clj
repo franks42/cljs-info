@@ -6,5 +6,7 @@
                  [clj-info "0.3.1"]
                  [fs42/clj-inspector "0.0.15"]
                  ]
+ 	:dev-dependencies [[lein-marginalia "0.7.1"]
+ 	                   [codox "0.6.1"]]
 ;;   :dev-dependencies [[clj-ns-browser "1.4.0-SNAPSHOT"]]
   :main cljs-info.core)
